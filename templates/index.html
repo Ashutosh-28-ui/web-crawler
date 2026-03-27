@@ -1,51 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Web Crawler</title>
+    <title>AI Web Crawler</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #444;
+        }
+
+        .card {
+            background: #fafafa;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        img {
+            margin: 10px;
+            border-radius: 10px;
+            width: 150px;
+        }
+
+        .cluster-box {
+            background: #eef2ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+    </style>
 </head>
+
 <body>
 
-<h1>AI Web Crawler</h1>
+<div class="container">
+
+<h1>AI Web Crawler 🔍</h1>
 
 <form method="POST">
     <input type="text" name="url" placeholder="Enter URL" required>
     <input type="number" name="depth" value="1" min="1" max="3">
-    <button type="submit">Run</button>
+    <button type="submit" onclick="this.innerText='Loading...'">Run</button>
 </form>
 
-<hr>
-
 {% if results %}
-    <h2>Titles</h2>
-    <ul>
-        {% for url, title in results.titles.items() %}
-            <li>{{ title }} - {{ url }}</li>
-        {% endfor %}
-    </ul>
 
-    <h2>Images</h2>
+    <h2>📄 Titles</h2>
+    {% for url, title in results.titles.items() %}
+        <div class="card">
+            <strong>{{ title }}</strong><br>
+            <small>{{ url }}</small>
+        </div>
+    {% endfor %}
+
+    <h2>🖼️ Images</h2>
     {% for img in results.images %}
-        <img src="{{ img }}" width="200">
+        <img src="{{ img }}">
     {% endfor %}
-{% endif %}
-    <h2>Clusters</h2>
 
-{% if results.get('clusters') is not none and results.clusters|length > 0 %}
-    <ul>
+    <h2>🧠 Clusters</h2>
+    {% if results.get('clusters') is not none and results.clusters|length > 0 %}
         {% for cluster in results.clusters %}
-            <li>Page {{ loop.index }} → Cluster {{ cluster }}</li>
+            <div class="cluster-box">
+                Page {{ loop.index }} → Cluster {{ cluster }}
+            </div>
         {% endfor %}
-    </ul>
+    {% endif %}
+
+    <h2>🔑 Keywords</h2>
+    {% if results.get('keywords') is not none and results.keywords|length > 0 %}
+        {% for cluster, words in results.keywords.items() %}
+            <div class="cluster-box">
+                <strong>Cluster {{ cluster }}</strong><br>
+                {{ words | join(', ') }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
 {% endif %}
 
-<h2>Cluster Keywords</h2>
-
-{% if results.get('keywords') is not none and results.keywords|length > 0 %}
-    {% for cluster, words in results.keywords.items() %}
-        <h3>Cluster {{ cluster }}</h3>
-        <p>{{ words | join(', ') }}</p>
-    {% endfor %}
-{% endif %}
+</div>
 
 </body>
 </html>
